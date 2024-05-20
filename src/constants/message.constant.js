@@ -21,6 +21,7 @@ export const MESSAGES = {
         REQURIED: '이름을 입력해 주세요.',
       },
       UNAUTHORIZED: '인증 정보가 유효하지 않습니다.',
+      FORBIDDEN: '접근 권한이 없습니다.',
       JWT: {
         NO_TOKEN: '인증 정보가 없습니다.',
         NOT_SUPPORTED_TYPE: '지원하지 않는 인증 방식입니다.',
@@ -62,6 +63,9 @@ export const MESSAGES = {
       SUCCEED: '이력서 상세 조회에 성공했습니다.',
     },
     UPDATE: {
+      STATUS: {
+        SUCCEED: '이력서 지원 상태 변경에 성공했습니다.',
+      },
       SUCCEED: '이력서 수정에 성공했습니다.',
       NO_BODY_DATA: '수정 할 정보를 입력해 주세요.',
     },

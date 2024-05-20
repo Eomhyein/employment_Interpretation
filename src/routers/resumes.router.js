@@ -5,6 +5,7 @@ import { createResumeValidator } from '../middlewares/validators/create-resume-v
 import { prisma } from '../utils/prisma.util.js';
 import { updateResumeValidator } from '../middlewares/validators/updated-resume-validator.middleware.js';
 import { USER_ROLE } from '../constants/user.constant.js';
+import { requireRoles } from '../middlewares/require-roles.middleware.js';
 
 const resumesRouter = express.Router();
 
@@ -210,5 +211,23 @@ resumesRouter.delete('/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+// 이력서 지원 상태 변경
+resumesRouter.patch(
+  '/:id/status',
+  requireRoles([USER_ROLE.RECRUITER]),
+  async (req, res, next) => {
+    try {
+      const data = null;
+      return res.status(HTTP_STATUS.OK).json({
+        status: HTTP_STATUS.OK,
+        message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED,
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 export { resumesRouter };
