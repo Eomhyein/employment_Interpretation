@@ -8,8 +8,12 @@ import { prisma } from '../utils/prisma.util.js';
 import {
   ACCESS_TOKEN_EXPIRES_IN,
   HASH_SALT_ROUNDS,
+  REFRESH_TOKEN_EXPIRES_IN,
 } from '../constants/auth.constant.js';
-import { ACCESS_TOKEN_SECRET } from '../constants/env.constant.js';
+import {
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+} from '../constants/env.constant.js';
 
 const authRouter = express.Router();
 
@@ -71,10 +75,30 @@ authRouter.post('/sign-in', async (req, res, next) => {
       expiresIn: ACCESS_TOKEN_EXPIRES_IN,
     });
 
+    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+    });
+
+    const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS);
+
+    // RefreshToken을 생성 또는 갱신
+    await prisma.refreshToken.upsert({
+      where: {
+        userId: user.id,
+      },
+      update: {
+        refreshToken: hashedRefreshToken,
+      },
+      create: {
+        userId: user.id,
+        refreshToken: hashedRefreshToken,
+      },
+    });
+
     return res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
       message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
-      data: { accessToken },
+      data: { accessToken, refreshToken },
     });
   } catch (error) {
     next(error);
