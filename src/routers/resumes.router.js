@@ -227,13 +227,43 @@ resumesRouter.patch(
 
       const { status, reason } = req.body;
 
-      // 이력서 정보가 없는 경우
+      // 트랜잭션
+      await prisma.$transaction(async (tx) => {
+        // 이력서 정보 조회
+        const existedResume = await tx.resume.findUnique({
+          where: { id: +id },
+        });
 
-      const data = null;
-      return res.status(HTTP_STATUS.OK).json({
-        status: HTTP_STATUS.OK,
-        message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED,
-        data,
+        // 이력서 정보가 없는 경우
+        if (!existedResume) {
+          return res.status(HTTP_STATUS.NOT_FOUND).json({
+            status: HTTP_STATUS.NOT_FOUND,
+            message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
+          });
+        }
+
+        // 이력서 지원 상태 수정
+        const updatedResume = await tx.resume.update({
+          where: { id: +id },
+          data: { status },
+        });
+
+        // 이력서 로그 생성
+        const data = await tx.resumeLog.create({
+          data: {
+            recruiterId,
+            resumeId: existedResume.id,
+            oldStatus: existedResume.status,
+            newStatus: updatedResume.status,
+            reason,
+          },
+        });
+
+        return res.status(HTTP_STATUS.OK).json({
+          status: HTTP_STATUS.OK,
+          message: MESSAGES.RESUMES.UPDATE.STATUS.SUCCEED,
+          data,
+        });
       });
     } catch (error) {
       next(error);
