@@ -102,6 +102,27 @@ authRouter.post('/token', requireRefreshToken, async (req, res, next) => {
   }
 });
 
+authRouter.post('/sign-out', requireRefreshToken, async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    await prisma.refreshToken.update({
+      where: { userId: user.id },
+      data: {
+        refreshToken: null,
+      },
+    });
+
+    return res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.AUTH.SIGN_OUT.SUCCEED,
+      data: { id: user.id },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 const generateAuthTokens = async (payload) => {
   const userId = payload.id;
 
