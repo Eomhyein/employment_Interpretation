@@ -15,6 +15,7 @@ import {
   REFRESH_TOKEN_SECRET,
 } from '../constants/env.constant.js';
 import { requireRefreshToken } from '../middlewares/require-refresh-token.middleware.js';
+import { signInValidator } from '../middlewares/validators/sign-in-validator.middleware.js';
 
 const authRouter = express.Router();
 
@@ -54,7 +55,7 @@ authRouter.post('/sign-up', signUpValidator, async (req, res, next) => {
   }
 });
 
-authRouter.post('/sign-in', async (req, res, next) => {
+authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
   try {
     const { email, password } = req.body;
 

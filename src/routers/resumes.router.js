@@ -271,40 +271,44 @@ resumesRouter.patch(
   },
 );
 
-resumesRouter.get('/:id/logs', async (req, res, next) => {
-  try {
-    const { id } = req.params;
+resumesRouter.get(
+  '/:id/logs',
+  requireRoles([USER_ROLE.RECRUITER]),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
 
-    let data = await prisma.resumeLog.findMany({
-      where: {
-        resumeId: +id,
-      },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        recruiter: true,
-      },
-    });
+      let data = await prisma.resumeLog.findMany({
+        where: {
+          resumeId: +id,
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          recruiter: true,
+        },
+      });
 
-    data = data.map((log) => {
-      return {
-        id: log.id,
-        recruiterName: log.recruiter.name,
-        resumeId: log.resumeId,
-        oldStatus: log.oldStatus,
-        newStatus: log.newStatus,
-        reason: log.reason,
-        createdAt: log.createdAt,
-      };
-    });
+      data = data.map((log) => {
+        return {
+          id: log.id,
+          recruiterName: log.recruiter.name,
+          resumeId: log.resumeId,
+          oldStatus: log.oldStatus,
+          newStatus: log.newStatus,
+          reason: log.reason,
+          createdAt: log.createdAt,
+        };
+      });
 
-    return res.status(HTTP_STATUS.OK).json({
-      status: HTTP_STATUS.OK,
-      message: MESSAGES.RESUMES.READ_LIST.LOG.SUCCEED,
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+      return res.status(HTTP_STATUS.OK).json({
+        status: HTTP_STATUS.OK,
+        message: MESSAGES.RESUMES.READ_LIST.LOG.SUCCEED,
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 export { resumesRouter };
