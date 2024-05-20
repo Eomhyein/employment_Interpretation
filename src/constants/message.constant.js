@@ -58,6 +58,9 @@ export const MESSAGES = {
     },
     READ_LIST: {
       SUCCEED: '이력서 목록 조회에 성공했습니다.',
+      LOG: {
+        SUCCEED: '이력서 로그 목록 조회에 성공했습니다.',
+      },
     },
     READ_DETAIL: {
       SUCCEED: '이력서 상세 조회에 성공했습니다.',
