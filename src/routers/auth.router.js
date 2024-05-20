@@ -14,6 +14,7 @@ import {
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
 } from '../constants/env.constant.js';
+import { requireRefreshToken } from '../middlewares/require-refresh-token.middleware.js';
 
 const authRouter = express.Router();
 
@@ -71,38 +72,64 @@ authRouter.post('/sign-in', async (req, res, next) => {
 
     const payload = { id: user.id };
 
-    const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-      expiresIn: ACCESS_TOKEN_EXPIRES_IN,
-    });
-
-    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-      expiresIn: REFRESH_TOKEN_EXPIRES_IN,
-    });
-
-    const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS);
-
-    // RefreshToken을 생성 또는 갱신
-    await prisma.refreshToken.upsert({
-      where: {
-        userId: user.id,
-      },
-      update: {
-        refreshToken: hashedRefreshToken,
-      },
-      create: {
-        userId: user.id,
-        refreshToken: hashedRefreshToken,
-      },
-    });
+    const data = await generateAuthTokens(payload);
 
     return res.status(HTTP_STATUS.OK).json({
       status: HTTP_STATUS.OK,
       message: MESSAGES.AUTH.SIGN_IN.SUCCEED,
-      data: { accessToken, refreshToken },
+      data,
     });
   } catch (error) {
     next(error);
   }
 });
+
+authRouter.post('/token', requireRefreshToken, async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    const payload = { id: user.id };
+
+    const data = await generateAuthTokens(payload);
+
+    return res.status(HTTP_STATUS.OK).json({
+      status: HTTP_STATUS.OK,
+      message: MESSAGES.AUTH.TOKEN.SUCCEED,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+const generateAuthTokens = async (payload) => {
+  const userId = payload.id;
+
+  const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+  });
+
+  const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+    expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+  });
+
+  const hashedRefreshToken = bcrypt.hashSync(refreshToken, HASH_SALT_ROUNDS);
+
+  // RefreshToken을 생성 또는 갱신
+  await prisma.refreshToken.upsert({
+    where: {
+      userId,
+    },
+    update: {
+      refreshToken: hashedRefreshToken,
+    },
+    create: {
+      userId,
+      refreshToken: hashedRefreshToken,
+    },
+  });
+
+  return { accessToken, refreshToken };
+};
 
 export { authRouter };
