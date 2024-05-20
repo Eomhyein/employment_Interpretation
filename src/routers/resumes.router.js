@@ -4,6 +4,7 @@ import { MESSAGES } from '../constants/message.constant.js';
 import { createResumeValidator } from '../middlewares/validators/create-resume-validator.middleware.js';
 import { prisma } from '../utils/prisma.util.js';
 import { updateResumeValidator } from '../middlewares/validators/updated-resume-validator.middleware.js';
+import { USER_ROLE } from '../constants/user.constant.js';
 
 const resumesRouter = express.Router();
 
@@ -46,8 +47,24 @@ resumesRouter.get('/', async (req, res, next) => {
       sort = 'desc';
     }
 
+    const whereCondition = {};
+    // 채용 담당자인 경우
+    if (user.role === USER_ROLE.RECRUITER) {
+      // status를 받고, query 조건에 추가
+      const { status } = req.query;
+
+      if (status) {
+        whereCondition.status = status;
+      }
+    }
+    // 채용 담당자가 아닌 경우
+    else {
+      // 자신이 작성한 이력서만 조회
+      whereCondition.authorId = authorId;
+    }
+
     let data = await prisma.resume.findMany({
-      where: { authorId },
+      where: whereCondition,
       orderBy: {
         createdAt: sort,
       },
@@ -86,8 +103,14 @@ resumesRouter.get('/:id', async (req, res, next) => {
 
     const { id } = req.params;
 
+    const whereCondition = { id: +id };
+
+    if (user.role !== USER_ROLE.RECRUITER) {
+      whereCondition.authorId = authorId;
+    }
+
     let data = await prisma.resume.findUnique({
-      where: { id: +id, authorId },
+      where: whereCondition,
       include: { author: true },
     });
 
