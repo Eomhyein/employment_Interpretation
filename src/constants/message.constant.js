@@ -65,6 +65,9 @@ export const MESSAGES = {
     UPDATE: {
       STATUS: {
         SUCCEED: '이력서 지원 상태 변경에 성공했습니다.',
+        NO_STATUS: '변경하고자 하는 지원 상태를 입력해 주세요.',
+        NO_REASON: '지원 상태 변경 사유를 입력해 주세요.',
+        INVALID_STATUS: '유효하지 않은 지원 상태입니다.',
       },
       SUCCEED: '이력서 수정에 성공했습니다.',
       NO_BODY_DATA: '수정 할 정보를 입력해 주세요.',

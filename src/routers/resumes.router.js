@@ -3,9 +3,10 @@ import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { createResumeValidator } from '../middlewares/validators/create-resume-validator.middleware.js';
 import { prisma } from '../utils/prisma.util.js';
-import { updateResumeValidator } from '../middlewares/validators/updated-resume-validator.middleware.js';
+import { updateResumeValidator } from '../middlewares/validators/update-resume-validator.middleware.js';
 import { USER_ROLE } from '../constants/user.constant.js';
 import { requireRoles } from '../middlewares/require-roles.middleware.js';
+import { updateResumeStatusValidator } from '../middlewares/validators/update-resume-status-validator.middleware copy.js';
 
 const resumesRouter = express.Router();
 
@@ -216,8 +217,18 @@ resumesRouter.delete('/:id', async (req, res, next) => {
 resumesRouter.patch(
   '/:id/status',
   requireRoles([USER_ROLE.RECRUITER]),
+  updateResumeStatusValidator,
   async (req, res, next) => {
     try {
+      const user = req.user;
+      const recruiterId = user.id;
+
+      const { id } = req.params;
+
+      const { status, reason } = req.body;
+
+      // 이력서 정보가 없는 경우
+
       const data = null;
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
