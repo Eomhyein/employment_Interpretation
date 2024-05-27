@@ -6,7 +6,7 @@ import { prisma } from '../utils/prisma.util.js';
 import { updateResumeValidator } from '../middlewares/validators/update-resume-validator.middleware.js';
 import { USER_ROLE } from '../constants/user.constant.js';
 import { requireRoles } from '../middlewares/require-roles.middleware.js';
-import { updateResumeStatusValidator } from '../middlewares/validators/update-resume-status-validator.middleware copy.js';
+import { updateResumeStatusValidator } from '../middlewares/validators/update-resume-status-validator.middleware.js';
 
 const resumesRouter = express.Router();
 
