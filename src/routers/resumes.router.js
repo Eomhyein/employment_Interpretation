@@ -10,7 +10,7 @@ import { updateResumeStatusValidator } from '../middlewares/validators/update-re
 
 const resumesRouter = express.Router();
 
-// 이력서 생성
+// 1. 이력서 생성
 resumesRouter.post('/', createResumeValidator, async (req, res, next) => {
   try {
     const user = req.user;
@@ -35,7 +35,7 @@ resumesRouter.post('/', createResumeValidator, async (req, res, next) => {
   }
 });
 
-// 이력서 목록 조회
+// 2. 이력서 목록 조회
 resumesRouter.get('/', async (req, res, next) => {
   try {
     const user = req.user;
@@ -50,18 +50,18 @@ resumesRouter.get('/', async (req, res, next) => {
     }
 
     const whereCondition = {};
-    // 채용 담당자인 경우
+    // 2-1 채용 담당자인 경우
     if (user.role === USER_ROLE.RECRUITER) {
-      // status를 받고, query 조건에 추가
+      // 2-2 status를 받고, query 조건에 추가
       const { status } = req.query;
 
       if (status) {
         whereCondition.status = status;
       }
     }
-    // 채용 담당자가 아닌 경우
+    // 2-3 채용 담당자가 아닌 경우
     else {
-      // 자신이 작성한 이력서만 조회
+      // 2-4 자신이 작성한 이력서만 조회
       whereCondition.authorId = authorId;
     }
 
@@ -97,7 +97,7 @@ resumesRouter.get('/', async (req, res, next) => {
   }
 });
 
-// 이력서 상세 조회
+// 3. 이력서 상세 조회
 resumesRouter.get('/:id', async (req, res, next) => {
   try {
     const user = req.user;
@@ -143,7 +143,7 @@ resumesRouter.get('/:id', async (req, res, next) => {
   }
 });
 
-// 이력서 수정
+// 4. 이력서 수정
 resumesRouter.put('/:id', updateResumeValidator, async (req, res, next) => {
   try {
     const user = req.user;
@@ -182,7 +182,7 @@ resumesRouter.put('/:id', updateResumeValidator, async (req, res, next) => {
   }
 });
 
-// 이력서 삭제
+// 5. 이력서 삭제
 resumesRouter.delete('/:id', async (req, res, next) => {
   try {
     const user = req.user;
@@ -190,6 +190,7 @@ resumesRouter.delete('/:id', async (req, res, next) => {
 
     const { id } = req.params;
 
+    // 5-1. 이력서 정보가 없는 경우
     let existedResume = await prisma.resume.findUnique({
       where: { id: +id, authorId },
     });
@@ -200,7 +201,7 @@ resumesRouter.delete('/:id', async (req, res, next) => {
         message: MESSAGES.RESUMES.COMMON.NOT_FOUND,
       });
     }
-
+    // 5-2. 이력서가 있는 경우
     const data = await prisma.resume.delete({ where: { id: +id, authorId } });
 
     return res.status(HTTP_STATUS.OK).json({
@@ -213,7 +214,7 @@ resumesRouter.delete('/:id', async (req, res, next) => {
   }
 });
 
-// 이력서 지원 상태 변경
+// 선택2 Transaction 이력서 지원 상태 변경
 resumesRouter.patch(
   '/:id/status',
   requireRoles([USER_ROLE.RECRUITER]),

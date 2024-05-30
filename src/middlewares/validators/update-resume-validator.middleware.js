@@ -2,6 +2,7 @@ import Joi from 'joi';
 import { MESSAGES } from '../../constants/message.constant.js';
 import { MIN_RESUME_LENGTH } from '../../constants/resume.constant.js';
 
+// 이력서 수정 유효성 검증 및 에러 처리
 const schema = Joi.object({
   title: Joi.string(),
   content: Joi.string().min(MIN_RESUME_LENGTH).messages({

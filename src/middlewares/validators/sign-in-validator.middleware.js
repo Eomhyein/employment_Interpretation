@@ -8,6 +8,7 @@ const schema = Joi.object({
   }),
   password: Joi.string().required().messages({
     'any.required': MESSAGES.AUTH.COMMON.PASSWORD.REQURIED,
+    // 패스워드 글자가 몇 글자인지 알려주지 않는다(보안을 위해)
   }),
 });
 

@@ -13,7 +13,7 @@ app.get('/health-check', (req, res) => {
   return res.status(HTTP_STATUS.OK).send(`I'm healthy.`);
 });
 
-app.use('/api', apiRouter);
+app.use('/api', apiRouter); 
 
 app.use(errorHandler);
 

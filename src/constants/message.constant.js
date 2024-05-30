@@ -1,3 +1,5 @@
+// src/message.constant.js
+// 메시지만 관리하는 파일
 import { MIN_PASSWORD_LENGTH } from './auth.constant.js';
 import { MIN_RESUME_LENGTH } from './resume.constant.js';
 
@@ -44,6 +46,7 @@ export const MESSAGES = {
       SUCCEED: '토큰 재발급에 성공했습니다.',
     },
   },
+  // 4. 내 정보 조회
   USERS: {
     READ_ME: {
       SUCCEED: '내 정보 조회에 성공했습니다.',

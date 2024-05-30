@@ -4,7 +4,7 @@ import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
 const usersRouter = express.Router();
-
+// 4. 내 정보 조회
 usersRouter.get('/me', requireAccessToken, (req, res, next) => {
   try {
     const data = req.user;
