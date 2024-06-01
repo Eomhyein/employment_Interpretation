@@ -48,7 +48,7 @@ resumesRouter.get('/', async (req, res, next) => {
     if (sort !== 'desc' && sort !== 'asc') {
       sort = 'desc';
     }
-
+    // 선택 1 역할에 따른 결과 분기, 이력서 목록 조회
     const whereCondition = {};
     // 2-1 채용 담당자인 경우
     if (user.role === USER_ROLE.RECRUITER) {
@@ -59,7 +59,7 @@ resumesRouter.get('/', async (req, res, next) => {
         whereCondition.status = status;
       }
     }
-    // 2-3 채용 담당자가 아닌 경우
+    // 2-3 채용 담당자가 아닌 경우(지원자의 경우)
     else {
       // 2-4 자신이 작성한 이력서만 조회
       whereCondition.authorId = authorId;
@@ -214,6 +214,8 @@ resumesRouter.delete('/:id', async (req, res, next) => {
   }
 });
 
+
+
 // 선택2 Transaction 이력서 지원 상태 변경
 resumesRouter.patch(
   '/:id/status',
@@ -228,14 +230,14 @@ resumesRouter.patch(
 
       const { status, reason } = req.body;
 
-      // 트랜잭션
+      // 2-1 트랜잭션
       await prisma.$transaction(async (tx) => {
-        // 이력서 정보 조회
+        // 2-2 이력서 정보 조회
         const existedResume = await tx.resume.findUnique({
           where: { id: +id },
         });
 
-        // 이력서 정보가 없는 경우
+        // 2-3 이력서 정보가 없는 경우
         if (!existedResume) {
           return res.status(HTTP_STATUS.NOT_FOUND).json({
             status: HTTP_STATUS.NOT_FOUND,
@@ -243,20 +245,20 @@ resumesRouter.patch(
           });
         }
 
-        // 이력서 지원 상태 수정
+        // 2-4 이력서 지원 상태 수정
         const updatedResume = await tx.resume.update({
           where: { id: +id },
           data: { status },
         });
 
-        // 이력서 로그 생성
+        // 2-5 이력서 로그 생성
         const data = await tx.resumeLog.create({
           data: {
-            recruiterId,
-            resumeId: existedResume.id,
-            oldStatus: existedResume.status,
-            newStatus: updatedResume.status,
-            reason,
+            recruiterId, // 이력서 로그 ID
+            resumeId: existedResume.id, // 채용담당자 ID
+            oldStatus: existedResume.status, // 예전 상태
+            newStatus: updatedResume.status, // 새로운 상태
+            reason, // 사유
           },
         });
 
@@ -271,7 +273,7 @@ resumesRouter.patch(
     }
   },
 );
-
+// 선택3. Transaction 이력서 (Logs)로그 목록 조회
 resumesRouter.get(
   '/:id/logs',
   requireRoles([USER_ROLE.RECRUITER]),
@@ -285,7 +287,7 @@ resumesRouter.get(
         },
         orderBy: { createdAt: 'desc' },
         include: {
-          recruiter: true,
+          recruiter: true, // 채용담당자
         },
       });
 

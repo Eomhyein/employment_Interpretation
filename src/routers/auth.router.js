@@ -87,7 +87,7 @@ authRouter.post('/sign-in', signInValidator, async (req, res, next) => {
     next(error);
   }
 });
-
+// 선택1 RefreshToken 로그인 APi에 기능 추가
 authRouter.post('/token', requireRefreshToken, async (req, res, next) => {
   try {
     const user = req.user;
@@ -105,7 +105,7 @@ authRouter.post('/token', requireRefreshToken, async (req, res, next) => {
     next(error);
   }
 });
-
+// 선택2 RefreshToken 로그아웃 APi
 authRouter.post('/sign-out', requireRefreshToken, async (req, res, next) => {
   try {
     const user = req.user;

@@ -65,7 +65,7 @@ export const requireRefreshToken = async (req, res, next) => {
       },
     });
 
-    // 넘겨 받은 RefrehsToken과 비교
+    // 넘겨 받은 RefreshToken과 비교
     const isValidRefreshToken =
       existedRefreshToken?.refreshToken &&
       bcrypt.compareSync(refreshToken, existedRefreshToken.refreshToken);

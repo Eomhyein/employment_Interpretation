@@ -2,6 +2,7 @@ import Joi from 'joi';
 import { MESSAGES } from '../../constants/message.constant.js';
 import { RESUME_STATUS } from '../../constants/resume.constant.js';
 
+// 이력서 로그 저장을 위한 스키마 정의
 const schema = Joi.object({
   status: Joi.string()
     .required()
