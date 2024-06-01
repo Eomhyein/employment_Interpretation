@@ -1,12 +1,26 @@
 # 🤝나만의 채용 서비스 백엔드 서버 만들기_해석본
 - first commit : 필수 구현 
-  - 1) 회원가입
-  - 2) 로그인
-  - 3) AccessToken 인증 미들웨어
-  - 4) 내 정보 조회
-  - 5) 이력서 생성
-  - 6) 이력서 목록 조회, 상세 조회
-  - 7) 이력서 수정, 삭제
+  - 회원가입
+  - 로그인
+  - AccessToken 인증 미들웨어
+  - 내 정보 조회
+  - 이력서 생성
+  - 이력서 목록 조회, 상세 조회
+  - 이력서 수정, 삭제
+
+-second commit : 선택 구현
+  - 역할에 따른 실행 결과 분기
+    - 이력서 목록 조회 API 추가 구현
+    - 이력서 상세 조회 API 추가 구현
+  - Transaction 이용
+    - 역할 인가 Middleware
+    - 이력서 지원상태 변경 API
+    - 이력서 로그 목록 조회 API
+  - RefreshToken 활용
+    - 로그인 API에 기능 추가
+    - RefreshToken 인증 Middleware
+    - 토큰 재발급 API
+    - 로그아웃 API    
 
 # node-intermediate
 
